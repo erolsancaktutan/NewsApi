@@ -2,6 +2,7 @@ package com.es.news.di
 
 import com.es.news.network.ApiService
 import com.es.news.utility.Constants
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -12,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+@Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     @Singleton
@@ -22,7 +24,7 @@ object NetworkModule {
             val requestBuilder = orginal.newBuilder()
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .addHeader("Accept", "application/json")
-                .addHeader("x-api-key", Constants.API_KEY)
+                .addHeader("Authorization", Constants.API_KEY)
                 .method(orginal.method(), orginal.body())
             val request = requestBuilder.build()
             chain.proceed(request)
