@@ -6,7 +6,7 @@ import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 class NewsRepository @Inject constructor(private val apiService: ApiService) {
-    fun getTrendMovies(lang: String): Observable<ResponseSources> {
+    fun getNewsSources(lang: String): Observable<ResponseSources> {
         return apiService.getSources(lang)
     }
 }
