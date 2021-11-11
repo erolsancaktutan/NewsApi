@@ -1,8 +1,10 @@
 package com.es.news.ui.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.es.news.ui.adapter.CategoryAdapter
 import com.es.news.ui.adapter.SourceAdapter
 import com.es.news.databinding.ActivityMainBinding
@@ -56,6 +58,4 @@ class MainActivity : BaseActivity() {
             binding.sourcesRV.adapter!!.notifyDataSetChanged()
         })
     }
-
-
 }

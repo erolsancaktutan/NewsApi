@@ -8,4 +8,6 @@ object Constants {
     private external fun getApiKey(): String
     val BASE_URL = getBaseURL()
     val API_KEY = getApiKey()
+
+    const val PAGE_SIZE = 5
 }

@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.es.news.abstract.PaginationListener
 import com.es.news.databinding.FragmentNewsBinding
 import com.es.news.ui.adapter.NewsAdapter
+import com.es.news.utility.Constants
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +21,10 @@ class NewsFragment : BaseFragment() {
     private var binding: FragmentNewsBinding? = null
     private val newsViewModel: NewsViewModel by viewModels()
     private var sourceId: String? = null
+    private var pageCount = 0
+    private var isPaginationFinished = false
+    private var isLoading = false
+    private var isLastPage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,31 +42,60 @@ class NewsFragment : BaseFragment() {
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        utils.setRVDivider(binding!!.newsRV,16,16)
+        utils.setRVDivider(binding!!.newsRV, 16, 16)
         createNewsAdapter()
         observeNewsList()
-        newsViewModel.getNews(sourceId!!,20,1)
-
-
+        setScrollListener()
+        getNews()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun observeNewsList(){
-        newsViewModel.news().observe(requireActivity(), {
-            binding!!.newsRV.adapter!!.notifyDataSetChanged()
+    private fun getNews() {
+        pageCount++
+        newsViewModel.getNews(sourceId!!, Constants.PAGE_SIZE, pageCount, paginationIsFinished = {
+            isPaginationFinished = it
         })
     }
 
-    private fun createNewsAdapter(){
+    @SuppressLint("NotifyDataSetChanged")
+    private fun observeNewsList() {
+        newsViewModel.news().observe(requireActivity(), {
+            binding!!.newsRV.adapter!!.notifyDataSetChanged()
+            binding!!.loadingTV.visibility = View.GONE
+            isLoading = false
+            isLastPage = false
+        })
+    }
+
+    private fun createNewsAdapter() {
         binding!!.newsRV.adapter = NewsAdapter(newsViewModel.news().value!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    private fun setScrollListener() {
+        binding!!.newsRV.addOnScrollListener(object :
+            PaginationListener(binding!!.newsRV.layoutManager as LinearLayoutManager) {
+            override fun loadMoreItems() {
+                isLoading = true
+                isLastPage = true
+                if (!isPaginationFinished) {
+                    getNews()
+                    binding!!.loadingTV.visibility = View.VISIBLE
+                }
+            }
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+        })
     }
 
     companion object {
@@ -71,4 +107,5 @@ class NewsFragment : BaseFragment() {
                 }
             }
     }
+
 }

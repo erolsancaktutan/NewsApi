@@ -25,7 +25,6 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
     private val newsArr = ArrayList<Article>()
     private val newsList = MutableLiveData(newsArr)
 
-
     fun newsSourceList() = sourceList
     fun newsCategories() = categoryList
     fun news() = newsList
@@ -43,11 +42,15 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             }, {})
     }
 
-    fun getNews(sourceID: String, pageSize: Int, page: Int) {
+    fun getNews(
+        sourceID: String, pageSize: Int, page: Int,
+        paginationIsFinished: (isPaginationDone: Boolean) -> Unit
+    ) {
         newsRepository.getNews(sourceID, pageSize, page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
+                paginationIsFinished(newsArr.size >= result.totalResults)
                 newsArr.addAll(result.articles)
                 newsList.value = newsArr
             }, {})
