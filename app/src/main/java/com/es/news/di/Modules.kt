@@ -2,6 +2,7 @@ package com.es.news.di
 
 import com.es.news.network.ApiService
 import com.es.news.utility.Constants
+import com.es.news.utility.Utils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object Modules {
     @Singleton
     @Provides
     fun provideRetrofit(): ApiService {
@@ -39,4 +40,8 @@ object NetworkModule {
 
         return retrofit.create(ApiService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideUtils() = Utils()
 }

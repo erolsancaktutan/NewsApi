@@ -10,28 +10,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.es.news.R
 
-object Utils {
-    @BindingAdapter("loadImage")
-    @JvmStatic
-    fun loadImage(iv: ImageView, url: String) {
-        Glide.with(iv.context)
-            .asBitmap()
-            .load(url)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap>?,
-                ) {
-                    iv.setImageBitmap(resource)
-                }
-            })
+class Utils {
+    fun setRVDivider(rv: RecyclerView, marginStartDp:Int, marginEndDp:Int) {
+        val itemDec =
+            DividerItemDecoration(rv.context, R.drawable.divider, dpToPx(marginStartDp), dpToPx(marginEndDp))
+        rv.addItemDecoration(itemDec)
     }
 
-    fun dpToPx(dp: Int): Int {
+    fun dpToPx(dp:Int):Int{
         return (dp * Resources.getSystem().displayMetrics.density).toInt()
     }
+
 }

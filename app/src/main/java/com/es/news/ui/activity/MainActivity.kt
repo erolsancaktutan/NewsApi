@@ -20,7 +20,7 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.categoryRV.layoutManager = horizantalLayoutManager
-        setRVDivider(binding.sourcesRV,16, 16)
+        utils.setRVDivider(binding.sourcesRV,16, 16)
         createCategoryListAdapter()
         createSourceListAdapter()
 

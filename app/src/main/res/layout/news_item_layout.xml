@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -20,19 +22,33 @@
             android:layout_height="248dp"
             android:background="@color/black"
             android:scaleType="centerCrop"
-            app:loadImage="@{article.urlToImage}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0" />
+            app:layout_constraintVertical_bias="0"
+            app:loadImage="@{article.urlToImage}" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"
-            android:text="@{article.title}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/posterIV"/>
+            android:text="@{article.title}"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/dateTV"
+            app:layout_constraintTop_toBottomOf="@+id/posterIV" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dateTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@{article.publishedAt}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

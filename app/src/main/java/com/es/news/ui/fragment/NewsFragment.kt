@@ -1,5 +1,6 @@
 package com.es.news.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,8 +38,19 @@ class NewsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        utils.setRVDivider(binding!!.newsRV,16,16)
+        createNewsAdapter()
+        observeNewsList()
+        newsViewModel.getNews(sourceId!!,20,1)
 
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun observeNewsList(){
+        newsViewModel.news().observe(requireActivity(), {
+            binding!!.newsRV.adapter!!.notifyDataSetChanged()
+        })
     }
 
     private fun createNewsAdapter(){
@@ -52,7 +64,7 @@ class NewsFragment : BaseFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(soourceId: String) =
+        fun newInstance(sourceId: String) =
             NewsFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_SOURCE_ID, sourceId)

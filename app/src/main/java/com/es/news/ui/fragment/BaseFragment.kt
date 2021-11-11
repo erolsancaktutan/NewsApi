@@ -1,6 +1,8 @@
 package com.es.news.ui.fragment
 
 import androidx.fragment.app.Fragment
+import com.es.news.utility.Utils
+import javax.inject.Inject
 
 /**
 
@@ -14,4 +16,6 @@ import androidx.fragment.app.Fragment
  */
 
 open class BaseFragment: Fragment() {
+    @Inject
+    lateinit var utils: Utils
 }
