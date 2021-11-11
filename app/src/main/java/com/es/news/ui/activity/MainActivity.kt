@@ -2,7 +2,9 @@ package com.es.news.ui.activity
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import com.es.news.adapter.CategoryAdapter
+import com.es.news.adapter.SourceAdapter
 import com.es.news.databinding.ActivityMainBinding
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,9 +19,24 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
         binding.categoryRV.layoutManager = horizantalLayoutManager
         binding.sourcesRV.layoutManager = verticalLayoutManager
+        setRVDivider(binding.sourcesRV,16, 16)
         createCategoryListAdapter()
+        createSourceListAdapter()
+
         observeCategoryList()
+
         newsViewModel.getNewsSourceList("en")
+    }
+
+    private fun createCategoryListAdapter() {
+        binding.categoryRV.adapter = CategoryAdapter(newsViewModel.newsCategories().value!!,
+            click={isChecked, categoryName->
+                var a = ""
+            })
+    }
+
+    private fun createSourceListAdapter(){
+        binding.sourcesRV.adapter = SourceAdapter(newsViewModel.newsSourceList().value!!)
     }
 
     private fun observeCategoryList() {
@@ -28,10 +45,11 @@ class MainActivity : BaseActivity() {
        })
     }
 
-    private fun createCategoryListAdapter() {
-        binding.categoryRV.adapter = CategoryAdapter(newsViewModel.newsCategories().value!!,
-            click={isChecked, categoryName->
-                var a = ""
+    private fun observeSourceList(){
+        newsViewModel.newsSourceList().observe(this, Observer {
+            binding.sourcesRV.adapter!!.notifyDataSetChanged()
         })
     }
+
+
 }
