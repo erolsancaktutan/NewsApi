@@ -69,7 +69,9 @@ class NewsFragment : BaseFragment() {
     }
 
     private fun createNewsAdapter() {
-        binding!!.newsRV.adapter = NewsAdapter(newsViewModel.news().value!!)
+        binding!!.newsRV.adapter = NewsAdapter(newsViewModel.news().value!!, click = {position, isOnList->
+            newsViewModel.changeReadListStatus(position, isOnList)
+        })
     }
 
     override fun onDestroyView() {

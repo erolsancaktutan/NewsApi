@@ -2,6 +2,8 @@ package com.es.news.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.es.news.db.ArticleDao
+import com.es.news.db.model.ArticleData
 import com.es.news.model.Article
 import com.es.news.model.Category
 import com.es.news.model.Source
@@ -12,7 +14,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 @HiltViewModel
-class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
+class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository,
+                                        private val articleDao: ArticleDao) : ViewModel() {
     private val categoryArr = ArrayList<Category>()
     private val categoryList = MutableLiveData(categoryArr)
     private val selectedCategories = ArrayList<String>()
@@ -42,6 +45,18 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             }, {})
     }
 
+    fun changeReadListStatus(position:Int, isOnList:Boolean){
+        if(!isOnList){
+            articleDao.saveArticle(ArticleData(newsArr[position].url) )
+        } else {
+            articleDao.deleteArticle(newsArr[position].url)
+        }
+        newsArr[position].isOnList = !isOnList
+        newsList.value = newsArr
+    }
+
+
+
     fun getNews(
         sourceID: String, pageSize: Int, page: Int,
         paginationIsFinished: (isPaginationDone: Boolean) -> Unit
@@ -51,9 +66,16 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
                 paginationIsFinished(newsArr.size >= result.totalResults)
-                newsArr.addAll(result.articles)
+                newsArr.addAll(checkIsOnList(result.articles))
                 newsList.value = newsArr
             }, {})
+    }
+
+    private fun checkIsOnList(articles:ArrayList<Article>):ArrayList<Article>{
+            articles.forEach {
+                it.isOnList = articleDao.getCount(it.url) > 0
+            }
+        return articles
     }
 
     private fun setSourceResult(result: ArrayList<Source>) {

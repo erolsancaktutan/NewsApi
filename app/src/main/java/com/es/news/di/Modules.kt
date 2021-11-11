@@ -1,11 +1,15 @@
 package com.es.news.di
 
+import android.content.Context
+import androidx.room.Room
+import com.es.news.db.AppDB
 import com.es.news.network.ApiService
 import com.es.news.utility.Constants
 import com.es.news.utility.Utils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.OkHttpClient
@@ -44,4 +48,16 @@ object Modules {
     @Singleton
     @Provides
     fun provideUtils() = Utils()
+
+    @Singleton
+    @Provides
+    fun provideAppDB(@ApplicationContext application: Context) =
+        Room.databaseBuilder(application, AppDB::class.java, "MainDB")
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
+
+    @Singleton
+    @Provides
+    fun provideUserDao(appDB: AppDB) = appDB.articleDao()
 }
