@@ -12,8 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
+    private val categories = ArrayList<Category>()
     private val sourceList = MutableLiveData(ArrayList<Source>())
-    private val categoryList = MutableLiveData(ArrayList<Category>())
+    private val categoryList = MutableLiveData(categories)
 
     fun newsSourceList() = sourceList
     fun newsCategories() = categoryList
@@ -25,7 +26,7 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
-                val categories = ArrayList<Category>()
+
                 categories.add(Category("All news", true))
                 for (i in 0 until result.sources.size) {
                     if (categories.find { it.category == result.sources[i].category } == null) {
