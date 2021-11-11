@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.es.news.databinding.FragmentNewsBinding
+import com.es.news.ui.adapter.NewsAdapter
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_SOURCE_ID = "sourceId"
 
 @AndroidEntryPoint
-class NewsFragment : Fragment() {
+class NewsFragment : BaseFragment() {
     private var binding: FragmentNewsBinding? = null
-    private val moviesViewModel: NewsViewModel by viewModels()
+    private val newsViewModel: NewsViewModel by viewModels()
     private var sourceId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +38,11 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+    }
+
+    private fun createNewsAdapter(){
+        binding!!.newsRV.adapter = NewsAdapter(newsViewModel.news().value!!)
     }
 
     override fun onDestroyView() {

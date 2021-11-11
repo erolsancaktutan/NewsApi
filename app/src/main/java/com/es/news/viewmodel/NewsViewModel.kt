@@ -2,6 +2,7 @@ package com.es.news.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.es.news.model.Article
 import com.es.news.model.Category
 import com.es.news.model.Source
 import com.es.news.repository.NewsRepository
@@ -12,16 +13,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
-    private val categories = ArrayList<Category>()
-    private val currentSources = ArrayList<Source>()
-    private val allSources = ArrayList<Source>()
-    private val sourceList = MutableLiveData(currentSources)
-    private val categoryList = MutableLiveData(categories)
+    private val categoryArr = ArrayList<Category>()
+    private val categoryList = MutableLiveData(categoryArr)
     private val selectedCategories = ArrayList<String>()
+
+    private val currentSourcesArr = ArrayList<Source>()
+    private val allSources = ArrayList<Source>()
+    private val sourceList = MutableLiveData(currentSourcesArr)
     private val filteredSources = ArrayList<Source>()
+
+    private val newsArr = ArrayList<Article>()
+    private val newsList = MutableLiveData(newsArr)
+
 
     fun newsSourceList() = sourceList
     fun newsCategories() = categoryList
+    fun news() = newsList
 
     fun getNewsSourceList(
         lang: String
@@ -32,17 +39,27 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .subscribe({ result ->
                 allSources.addAll(result.sources)
                 createCategoryList(allSources)
-                setResult(allSources)
+                setSourceResult(allSources)
             }, {})
     }
 
-    private fun setResult(result:ArrayList<Source>){
-        currentSources.clear()
-        currentSources.addAll(result)
-        sourceList.value = currentSources
+    fun getNews(sourceID: String, pageSize: Int, page: Int) {
+        newsRepository.getNews(sourceID, pageSize, page)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ result ->
+                newsArr.addAll(result.articles)
+                newsList.value = newsArr
+            }, {})
     }
 
-    fun prepareFilterCategoryList(isSelected: Boolean, categoryName: String){
+    private fun setSourceResult(result: ArrayList<Source>) {
+        currentSourcesArr.clear()
+        currentSourcesArr.addAll(result)
+        sourceList.value = currentSourcesArr
+    }
+
+    fun prepareFilterCategoryList(isSelected: Boolean, categoryName: String) {
         if (isSelected)
             selectedCategories.add(categoryName)
         else
@@ -51,22 +68,22 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
 
     fun filterResources() {
         filteredSources.clear()
-        if (selectedCategories.size>0) {
-            for (i in 0 until selectedCategories.size){
-               filteredSources.addAll(allSources.filter { it.category == selectedCategories[i] })
+        if (selectedCategories.size > 0) {
+            for (i in 0 until selectedCategories.size) {
+                filteredSources.addAll(allSources.filter { it.category == selectedCategories[i] })
             }
-            setResult(filteredSources)
-        } else{
-            setResult(allSources)
+            setSourceResult(filteredSources)
+        } else {
+            setSourceResult(allSources)
         }
     }
 
     private fun createCategoryList(sources: ArrayList<Source>) {
         for (i in 0 until sources.size) {
-            if (categories.find { it.category == sources[i].category } == null) {
-                categories.add(Category(sources[i].category, false))
+            if (categoryArr.find { it.category == sources[i].category } == null) {
+                categoryArr.add(Category(sources[i].category, false))
             }
         }
-        categoryList.value = categories
+        categoryList.value = categoryArr
     }
 }
