@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private val newsViewModel: NewsViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +25,7 @@ class MainActivity : BaseActivity() {
         createSourceListAdapter()
 
         observeCategoryList()
+        observeSourceList()
 
         newsViewModel.getNewsSourceList("en")
     }
@@ -31,7 +33,8 @@ class MainActivity : BaseActivity() {
     private fun createCategoryListAdapter() {
         binding.categoryRV.adapter = CategoryAdapter(newsViewModel.newsCategories().value!!,
             click={isChecked, categoryName->
-                var a = ""
+                newsViewModel.prepareFilterCategoryList(isChecked, categoryName)
+                newsViewModel.filterResources()
             })
     }
 

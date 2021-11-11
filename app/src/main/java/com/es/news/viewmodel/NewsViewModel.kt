@@ -13,9 +13,12 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
     private val categories = ArrayList<Category>()
-    private val sources = ArrayList<Source>()
-    private val sourceList = MutableLiveData(sources)
+    private val currentSources = ArrayList<Source>()
+    private val allSources = ArrayList<Source>()
+    private val sourceList = MutableLiveData(currentSources)
     private val categoryList = MutableLiveData(categories)
+    private val selectedCategories = ArrayList<String>()
+    private val filteredSources = ArrayList<Source>()
 
     fun newsSourceList() = sourceList
     fun newsCategories() = categoryList
@@ -27,14 +30,43 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
-                for (i in 0 until result.sources.size) {
-                    if (categories.find { it.category == result.sources[i].category } == null) {
-                        categories.add(Category(result.sources[i].category, false))
-                    }
-                }
-                categoryList.value = categories
-                sources.addAll(result.sources)
-                sourceList.value = sources
+                allSources.addAll(result.sources)
+                createCategoryList(allSources)
+                setResult(allSources)
             }, {})
+    }
+
+    private fun setResult(result:ArrayList<Source>){
+        currentSources.clear()
+        currentSources.addAll(result)
+        sourceList.value = currentSources
+    }
+
+    fun prepareFilterCategoryList(isSelected: Boolean, categoryName: String){
+        if (isSelected)
+            selectedCategories.add(categoryName)
+        else
+            selectedCategories.remove(categoryName)
+    }
+
+    fun filterResources() {
+        filteredSources.clear()
+        if (selectedCategories.size>0) {
+            for (i in 0 until selectedCategories.size){
+               filteredSources.addAll(allSources.filter { it.category == selectedCategories[i] })
+            }
+            setResult(filteredSources)
+        } else{
+            setResult(allSources)
+        }
+    }
+
+    private fun createCategoryList(sources: ArrayList<Source>) {
+        for (i in 0 until sources.size) {
+            if (categories.find { it.category == sources[i].category } == null) {
+                categories.add(Category(sources[i].category, false))
+            }
+        }
+        categoryList.value = categories
     }
 }

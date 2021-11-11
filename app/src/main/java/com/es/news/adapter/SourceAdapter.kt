@@ -37,7 +37,6 @@ class SourceAdapter(
     override fun onBindViewHolder(holder: SourceViewHolder, position: Int) {
         val source = sourceList[position]
         holder.bind(source)
-
     }
 
     override fun getItemCount(): Int = sourceList.size
