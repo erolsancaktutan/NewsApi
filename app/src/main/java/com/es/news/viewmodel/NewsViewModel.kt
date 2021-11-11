@@ -27,7 +27,7 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
 
-                categories.add(Category("All news", true))
+                categories.add(Category("All categories", true))
                 for (i in 0 until result.sources.size) {
                     if (categories.find { it.category == result.sources[i].category } == null) {
                         categories.add(Category(result.sources[i].category, false))

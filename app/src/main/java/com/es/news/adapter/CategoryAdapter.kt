@@ -2,6 +2,7 @@ package com.es.news.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
@@ -21,7 +22,7 @@ import com.es.news.model.Category
 
 class CategoryAdapter (
     private var categoryList: ArrayList<Category>,
-    private val click: (category: String) -> Unit
+    private val click: (isChecked:Boolean, category: String) -> Unit
 ) : RecyclerView.Adapter<CategoryVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CategoryVH(
@@ -35,7 +36,7 @@ class CategoryAdapter (
         val character = categoryList[position]
         holder.bind(character)
         holder.itemView.setOnClickListener {
-            click(categoryList[position].category)
+            click((it as AppCompatCheckBox).isChecked,categoryList[position].category)
         }
     }
 
