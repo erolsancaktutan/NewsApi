@@ -3,6 +3,7 @@ package com.es.news.ui.activity
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,13 +22,11 @@ import com.es.news.utility.DividerItemDecoration
  */
 
 open class BaseActivity:AppCompatActivity() {
-    lateinit var transaction: FragmentTransaction
     lateinit var horizantalLayoutManager:LinearLayoutManager
     lateinit var verticalLayoutManager: LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        transaction= supportFragmentManager.beginTransaction()
         horizantalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
@@ -40,5 +39,11 @@ open class BaseActivity:AppCompatActivity() {
 
     fun dpToPx(dp:Int):Int{
         return (dp * Resources.getSystem().displayMetrics.density).toInt()
+    }
+
+    fun openFragment(tag:String, fragment:Fragment){
+        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        transaction.addToBackStack(tag)
+        transaction.add(android.R.id.content, fragment).commit()
     }
 }

@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiService {
-    @GET("sources")
+    @GET("v2/sources")
     fun getSources(
         @Query("language") language: String
     ): Observable<ResponseSources>

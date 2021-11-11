@@ -3,9 +3,10 @@ package com.es.news.ui.activity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
-import com.es.news.adapter.CategoryAdapter
-import com.es.news.adapter.SourceAdapter
+import com.es.news.ui.adapter.CategoryAdapter
+import com.es.news.ui.adapter.SourceAdapter
 import com.es.news.databinding.ActivityMainBinding
+import com.es.news.ui.fragment.NewsFragment
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +40,10 @@ class MainActivity : BaseActivity() {
     }
 
     private fun createSourceListAdapter(){
-        binding.sourcesRV.adapter = SourceAdapter(newsViewModel.newsSourceList().value!!)
+        binding.sourcesRV.adapter = SourceAdapter(newsViewModel.newsSourceList().value!!,
+        click={sourceID->
+            openFragment("news", NewsFragment.newInstance(sourceID))
+        })
     }
 
     private fun observeCategoryList() {

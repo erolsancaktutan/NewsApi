@@ -1,13 +1,11 @@
-package com.es.news.adapter
+package com.es.news.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
-import com.es.news.databinding.CategoryItemLayoutBinding
 import com.es.news.databinding.SourceItemLayoutBinding
-import com.es.news.model.Category
 import com.es.news.model.Source
 
 /**
@@ -22,7 +20,8 @@ import com.es.news.model.Source
  */
 
 class SourceAdapter(
-    private var sourceList: ArrayList<Source>
+    private var sourceList: ArrayList<Source>,
+    private val click: (sourceID: String) -> Unit
 ) : RecyclerView.Adapter<SourceAdapter.SourceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = SourceViewHolder(
@@ -36,6 +35,9 @@ class SourceAdapter(
 
     override fun onBindViewHolder(holder: SourceViewHolder, position: Int) {
         val source = sourceList[position]
+        holder.item.root.setOnClickListener {
+            click(source.id)
+        }
         holder.bind(source)
     }
 
