@@ -76,16 +76,27 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun listByDate(articles: ArrayList<Article>): ArrayList<Article> {
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'")
         articles.forEach {
-            val date = simpleDateFormat.parse(it.publishedAt)
-            val dateStr = "${date.day}/${date.month}/${date.year} - ${date.hours}:${date.minutes}:${date.seconds}"
-            it.publishedAt = dateStr
+            val dateCalStr = prepareDate(it.publishedAt)
+            it.calendar = dateCalStr.first
+            it.publishedAt = dateCalStr.second
         }
         articles.sortByDescending {
-            it.publishedAt
+            it.calendar!!.timeInMillis
         }
         return articles
+    }
+
+    private fun prepareDate(publishedAt:String):Pair<Calendar,String>{
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'")
+        val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Istanbul"))
+        val date = simpleDateFormat.parse(publishedAt)
+        cal.time = date
+        val dateStr =
+            "${cal.get(Calendar.DAY_OF_MONTH)}.${cal.get(Calendar.MONTH)}.${cal.get(Calendar.YEAR)} - ${
+                cal.get(Calendar.HOUR)
+            }:${cal.get(Calendar.MINUTE)}:${cal.get(Calendar.SECOND)}"
+        return Pair(cal,dateStr)
     }
 
     private fun checkIsOnList(articles: ArrayList<Article>): ArrayList<Article> {

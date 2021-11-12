@@ -1,5 +1,8 @@
 package com.es.news.model
 
+import java.util.*
+import kotlin.collections.ArrayList
+
 /**
 
  * * * * * * * * * * * * * * * * *
@@ -26,7 +29,8 @@ data class Article(
     val urlToImage: String,
     var publishedAt: String,
     val content: String,
-    var isOnList:Boolean = false
+    var isOnList: Boolean = false,
+    var calendar: Calendar?
 )
 
 data class NewsSource(
