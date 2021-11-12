@@ -11,11 +11,17 @@ import com.es.news.repository.NewsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
-class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository,
-                                        private val articleDao: ArticleDao) : ViewModel() {
+class NewsViewModel @Inject constructor(
+    private val newsRepository: NewsRepository,
+    private val articleDao: ArticleDao
+) : ViewModel() {
     private val categoryArr = ArrayList<Category>()
     private val categoryList = MutableLiveData(categoryArr)
     private val selectedCategories = ArrayList<String>()
@@ -45,17 +51,13 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             }, {})
     }
 
-    fun changeReadListStatus(position:Int, isOnList:Boolean){
-        if(!isOnList){
-            articleDao.saveArticle(ArticleData(newsArr[position].url) )
+    fun changeReadListStatus(position: Int, isOnList: Boolean) {
+        if (!isOnList) {
+            articleDao.saveArticle(ArticleData(newsArr[position].url))
         } else {
             articleDao.deleteArticle(newsArr[position].url)
         }
-        newsArr[position].isOnList = !isOnList
-        newsList.value = newsArr
     }
-
-
 
     fun getNews(
         sourceID: String, pageSize: Int, page: Int,
@@ -66,15 +68,30 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ result ->
                 paginationIsFinished(newsArr.size >= result.totalResults)
-                newsArr.addAll(checkIsOnList(result.articles))
+                val listByDateArt = listByDate(result.articles)
+                val mNews = checkIsOnList(listByDateArt)
+                newsArr.addAll(mNews)
                 newsList.value = newsArr
             }, {})
     }
 
-    private fun checkIsOnList(articles:ArrayList<Article>):ArrayList<Article>{
-            articles.forEach {
-                it.isOnList = articleDao.getCount(it.url) > 0
-            }
+    private fun listByDate(articles: ArrayList<Article>): ArrayList<Article> {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'")
+        articles.forEach {
+            val date = simpleDateFormat.parse(it.publishedAt)
+            val dateStr = "${date.day}/${date.month}/${date.year} - ${date.hours}:${date.minutes}:${date.seconds}"
+            it.publishedAt = dateStr
+        }
+        articles.sortByDescending {
+            it.publishedAt
+        }
+        return articles
+    }
+
+    private fun checkIsOnList(articles: ArrayList<Article>): ArrayList<Article> {
+        articles.forEach {
+            it.isOnList = articleDao.getCount(it.url) > 0
+        }
         return articles
     }
 

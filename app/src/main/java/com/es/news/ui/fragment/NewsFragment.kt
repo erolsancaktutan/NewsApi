@@ -1,10 +1,12 @@
 package com.es.news.ui.fragment
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.es.news.abstract.PaginationListener
@@ -42,6 +44,7 @@ class NewsFragment : BaseFragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         utils.setRVDivider(binding!!.newsRV, 16, 16)
@@ -51,6 +54,7 @@ class NewsFragment : BaseFragment() {
         getNews()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getNews() {
         pageCount++
         newsViewModel.getNews(sourceId!!, Constants.PAGE_SIZE, pageCount, paginationIsFinished = {

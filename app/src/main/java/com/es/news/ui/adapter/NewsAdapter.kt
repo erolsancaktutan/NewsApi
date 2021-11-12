@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
 import com.es.news.databinding.NewsItemLayoutBinding
 import com.es.news.model.Article
+import java.text.SimpleDateFormat
 
 /**
 
