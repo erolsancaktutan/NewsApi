@@ -3,6 +3,8 @@ package com.es.news.ui.fragment
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +17,13 @@ import com.es.news.ui.adapter.NewsAdapter
 import com.es.news.utility.Constants
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 private const val ARG_SOURCE_ID = "sourceId"
 
 @AndroidEntryPoint
 class NewsFragment : BaseFragment() {
+    private lateinit var countDownTimer:CountDownTimer
     private var binding: FragmentNewsBinding? = null
     private val newsViewModel: NewsViewModel by viewModels()
     private var sourceId: String? = null
@@ -44,17 +48,16 @@ class NewsFragment : BaseFragment() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        utils.setRVDivider(binding!!.newsRV, 16, 16)
+        utils.setRVDivider(binding!!.newsRV, 0, 0)
         createNewsAdapter()
         observeNewsList()
         setScrollListener()
         getNews()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getNews() {
         pageCount++
         newsViewModel.getNews(sourceId!!, Constants.PAGE_SIZE, pageCount, paginationIsFinished = {

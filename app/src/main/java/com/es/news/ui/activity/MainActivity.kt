@@ -1,13 +1,12 @@
 package com.es.news.ui.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.es.news.databinding.ActivityMainBinding
 import com.es.news.ui.adapter.CategoryAdapter
 import com.es.news.ui.adapter.SourceAdapter
-import com.es.news.databinding.ActivityMainBinding
 import com.es.news.ui.fragment.NewsFragment
 import com.es.news.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,10 +24,8 @@ class MainActivity : BaseActivity() {
         utils.setRVDivider(binding.sourcesRV,16, 16)
         createCategoryListAdapter()
         createSourceListAdapter()
-
         observeCategoryList()
         observeSourceList()
-
         newsViewModel.getNewsSourceList("en")
     }
 
@@ -47,14 +44,16 @@ class MainActivity : BaseActivity() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun observeCategoryList() {
        newsViewModel.newsCategories().observe(this, {
            binding.categoryRV.adapter!!.notifyDataSetChanged()
        })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun observeSourceList(){
-        newsViewModel.newsSourceList().observe(this, Observer {
+        newsViewModel.newsSourceList().observe(this, {
             binding.sourcesRV.adapter!!.notifyDataSetChanged()
         })
     }

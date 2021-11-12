@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
 import com.es.news.databinding.NewsItemLayoutBinding
 import com.es.news.model.Article
-import java.text.SimpleDateFormat
 
 /**
 
@@ -36,7 +35,10 @@ class NewsAdapter(
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         val source = newsList[position]
+
         holder.item.addRemoveTV.setOnClickListener{
+            newsList[position].isOnList = !newsList[position].isOnList
+            notifyItemChanged(position)
            click(position, source.isOnList)
         }
         holder.bind(source)

@@ -1,6 +1,5 @@
 package com.es.news.db
 
-import androidx.annotation.NonNull
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
