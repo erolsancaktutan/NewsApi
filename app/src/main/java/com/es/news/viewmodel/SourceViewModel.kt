@@ -22,20 +22,6 @@ class SourceViewModel @Inject constructor(
     var job: Job? = null
     private val loadingSources = MutableLiveData(false)
 
-/*    fun getArticles( sourceID: String, pageSize: Int, page: Int) {
-        job = CoroutineScope(Dispatchers.IO).launch {
-            val response = newsRepository.getNews(sourceID,pageSize,page)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    articleList.postValue(response.body()!!.articles)
-                    loading.value = false
-                } else {
-                    onError("Error : ${response.message()} ")
-                }
-            }
-        }
-    }*/
-
     fun getSourceList(
         lang: String
     ) {
