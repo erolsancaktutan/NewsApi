@@ -1,36 +1,29 @@
 package com.es.news.ui.fragment
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.es.news.abstract.PaginationListener
+import androidx.lifecycle.lifecycleScope
 import com.es.news.databinding.FragmentNewsBinding
 import com.es.news.ui.adapter.NewsAdapter
-import com.es.news.utility.Constants
-import com.es.news.viewmodel.NewsViewModel
+import com.es.news.viewmodel.ArticleViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import kotlinx.coroutines.launch
 
 private const val ARG_SOURCE_ID = "sourceId"
 
 @AndroidEntryPoint
 class NewsFragment : BaseFragment() {
-    private lateinit var countDownTimer:CountDownTimer
     private var binding: FragmentNewsBinding? = null
-    private val newsViewModel: NewsViewModel by viewModels()
+    private val newsViewModel: ArticleViewModel by viewModels()
     private var sourceId: String? = null
-    private var pageCount = 0
-    private var isPaginationFinished = false
-    private var isLoading = false
-    private var isLastPage = false
+    private val newsAdapter by lazy {
+        NewsAdapter(click = {position, isOnList->
+
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,64 +40,28 @@ class NewsFragment : BaseFragment() {
         return binding!!.root
     }
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         utils.setRVDivider(binding!!.newsRV, 0, 0)
         createNewsAdapter()
         observeNewsList()
-        setScrollListener()
-        getNews()
     }
 
-    private fun getNews() {
-        pageCount++
-        newsViewModel.getNews(sourceId!!, Constants.PAGE_SIZE, pageCount, paginationIsFinished = {
-            isPaginationFinished = it
-        })
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
     private fun observeNewsList() {
-        newsViewModel.news().observe(requireActivity(), {
-            binding!!.newsRV.adapter!!.notifyDataSetChanged()
-            binding!!.loadingTV.visibility = View.GONE
-            isLoading = false
-            isLastPage = false
-        })
+        viewLifecycleOwner.lifecycleScope.launch {
+            newsViewModel.getArticles(sourceId!!).observe(viewLifecycleOwner, {
+               newsAdapter.submitData(lifecycle, it)
+            })
+        }
     }
 
     private fun createNewsAdapter() {
-        binding!!.newsRV.adapter = NewsAdapter(newsViewModel.news().value!!, click = {position, isOnList->
-            newsViewModel.changeReadListStatus(position, isOnList)
-        })
+        binding!!.newsRV.adapter = newsAdapter
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    private fun setScrollListener() {
-        binding!!.newsRV.addOnScrollListener(object :
-            PaginationListener(binding!!.newsRV.layoutManager as LinearLayoutManager) {
-            override fun loadMoreItems() {
-                isLoading = true
-                isLastPage = true
-                if (!isPaginationFinished) {
-                    getNews()
-                    binding!!.loadingTV.visibility = View.VISIBLE
-                }
-            }
-            override fun isLastPage(): Boolean {
-                return isLastPage
-            }
-
-            override fun isLoading(): Boolean {
-                return isLoading
-            }
-        })
     }
 
     companion object {
@@ -116,5 +73,4 @@ class NewsFragment : BaseFragment() {
                 }
             }
     }
-
 }

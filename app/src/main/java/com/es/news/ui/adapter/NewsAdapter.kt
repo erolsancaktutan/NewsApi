@@ -3,10 +3,13 @@ package com.es.news.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
 import com.es.news.databinding.NewsItemLayoutBinding
 import com.es.news.model.Article
+import com.es.news.model.ResponseNews
 
 /**
 
@@ -20,9 +23,8 @@ import com.es.news.model.Article
  */
 
 class NewsAdapter(
-    private var newsList: ArrayList<Article>,
     private val click: (position:Int, isOnList: Boolean) -> Unit
-) : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
+) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(DiffUtilCallBack) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NewsViewHolder(
         DataBindingUtil.inflate(
@@ -34,22 +36,23 @@ class NewsAdapter(
     )
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val source = newsList[position]
-
-        holder.item.addRemoveTV.setOnClickListener{
-            newsList[position].isOnList = !newsList[position].isOnList
-            notifyItemChanged(position)
-           click(position, source.isOnList)
-        }
-        holder.bind(source)
+        getItem(position)?.let { holder.bind(it)}
     }
 
-    override fun getItemCount(): Int = newsList.size
-
-    inner class NewsViewHolder(val item: NewsItemLayoutBinding) :
+    inner class NewsViewHolder(private val item: NewsItemLayoutBinding) :
         RecyclerView.ViewHolder(item.root) {
         fun bind(article: Article) {
             item.article = article
+        }
+    }
+
+    object DiffUtilCallBack : DiffUtil.ItemCallback<Article>() {
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return true
+        }
+
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return false
         }
     }
 }

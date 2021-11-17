@@ -3,57 +3,58 @@ package com.es.news.ui.activity
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
 import com.es.news.databinding.ActivityMainBinding
 import com.es.news.ui.adapter.CategoryAdapter
 import com.es.news.ui.adapter.SourceAdapter
 import com.es.news.ui.fragment.NewsFragment
-import com.es.news.viewmodel.NewsViewModel
+import com.es.news.viewmodel.SourceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val newsViewModel: NewsViewModel by viewModels()
+    private val sourceViewModel: SourceViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.categoryRV.layoutManager = horizantalLayoutManager
-        utils.setRVDivider(binding.sourcesRV,16, 16)
+        utils.setRVDivider(binding.sourcesRV, 16, 16)
         createCategoryListAdapter()
         createSourceListAdapter()
         observeCategoryList()
         observeSourceList()
-        newsViewModel.getNewsSourceList("en")
+        sourceViewModel.getSourceList("en")
     }
 
     private fun createCategoryListAdapter() {
-        binding.categoryRV.adapter = CategoryAdapter(newsViewModel.newsCategories().value!!,
-            click={isChecked, categoryName->
-                newsViewModel.prepareFilterCategoryList(isChecked, categoryName)
-                newsViewModel.filterResources()
+
+        binding.categoryRV.adapter = CategoryAdapter(sourceViewModel.categoryList.value!!,
+            click = { isChecked, categoryName ->
+                /*  sourceViewModel.prepareFilterCategoryList(isChecked, categoryName)
+                  sourceViewModel.filterResources()*/
             })
+
     }
 
-    private fun createSourceListAdapter(){
-        binding.sourcesRV.adapter = SourceAdapter(newsViewModel.newsSourceList().value!!,
-        click={sourceID->
-            openFragment("news", NewsFragment.newInstance(sourceID))
-        })
+    private fun createSourceListAdapter() {
+        binding.sourcesRV.adapter = SourceAdapter(sourceViewModel.sourceList.value!!,
+            click = { sourceID ->
+                openFragment("news", NewsFragment.newInstance(sourceID))
+            })
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun observeCategoryList() {
-       newsViewModel.newsCategories().observe(this, {
-           binding.categoryRV.adapter!!.notifyDataSetChanged()
-       })
+        sourceViewModel.categoryList.observe(this, {
+            binding.categoryRV.adapter!!.notifyDataSetChanged()
+        })
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun observeSourceList(){
-        newsViewModel.newsSourceList().observe(this, {
+    private fun observeSourceList() {
+        sourceViewModel.sourceList.observe(this, {
             binding.sourcesRV.adapter!!.notifyDataSetChanged()
         })
     }
