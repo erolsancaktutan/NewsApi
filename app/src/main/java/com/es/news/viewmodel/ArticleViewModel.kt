@@ -17,13 +17,10 @@ class ArticleViewModel @Inject constructor(
     //private val articleDao: ArticleDao
 ) : ViewModel() {
 
-    val articleList = MutableLiveData<PagingData<Article>>()
-
     fun getArticles(
         sourceID: String
     ): LiveData<PagingData<Article>> {
         val response = newsRepository.getNews(sourceID).cachedIn(viewModelScope)
-        articleList.value = response.value
         return response
     }
 
