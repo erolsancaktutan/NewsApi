@@ -1,6 +1,8 @@
 package com.es.news.ui.fragment
 
+import android.content.Context
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.es.news.db.ArticleDao
 import com.es.news.utility.Utils
 import javax.inject.Inject
@@ -16,10 +18,13 @@ import javax.inject.Inject
 
  */
 
-open class BaseFragment: Fragment() {
+open class BaseFragment : Fragment() {
     @Inject
     lateinit var utils: Utils
 
     @Inject
     lateinit var articleDao: ArticleDao
+
+    fun getHLayoutManager(context: Context) =
+        LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 }
