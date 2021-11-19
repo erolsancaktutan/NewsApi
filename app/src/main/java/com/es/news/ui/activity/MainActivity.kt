@@ -58,4 +58,13 @@ class MainActivity : BaseActivity() {
             binding.sourcesRV.adapter!!.notifyDataSetChanged()
         })
     }
+
+/*private fun bs(){
+
+    viewLifecycleOwner.lifecycleScope.launch {
+        sourceViewModel.getSourceList("en").observe(viewLifecycleOwner, {
+            newsAdapter.submitData(lifecycle, it)
+        })
+    }
+}*/
 }

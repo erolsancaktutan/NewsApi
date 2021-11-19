@@ -11,7 +11,7 @@ package com.es.news.model
 
  */
 
-data class ResponseSources(val status:String, val sources: ArrayList<Source>)
+data class ResponseSources(val status:String, val code:String, val message:String,val sources: ArrayList<Source>)
 
 data class Source(
     val id: String,
