@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.es.news.R
 import com.es.news.databinding.NewsItemLayoutBinding
+import com.es.news.db.ArticleDao
+import com.es.news.db.model.ArticleData
 import com.es.news.model.Article
 
 /**
@@ -21,9 +23,7 @@ import com.es.news.model.Article
 
  */
 
-class NewsAdapter(
-    private val click: (position:Int, isOnList: Boolean) -> Unit
-) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(DiffUtilCallBack) {
+class NewsAdapter(private val articleDao: ArticleDao) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(DiffUtilCallBack) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NewsViewHolder(
         DataBindingUtil.inflate(
@@ -35,15 +35,27 @@ class NewsAdapter(
     )
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it)}
-    }
-
-    inner class NewsViewHolder(private val item: NewsItemLayoutBinding) :
-        RecyclerView.ViewHolder(item.root) {
-        fun bind(article: Article) {
-            item.article = article
+        holder.item.article = getItem(position).apply {
+            this!!.isOnList = articleDao.isThereAnyArticle(this.url)
+        }
+        holder.item.addRemoveTV.setOnClickListener{
+            addRemoveForReadList(position)
         }
     }
+
+    private fun addRemoveForReadList(position: Int){
+        getItem(position)?.let {
+            if (articleDao.isThereAnyArticle(it.url)) {
+                articleDao.deleteArticle(it.url)
+            } else {
+                articleDao.saveArticle(ArticleData(it.url))
+            }
+            it.isOnList =!it.isOnList
+            notifyItemChanged(position)
+        }
+    }
+
+    inner class NewsViewHolder(val item: NewsItemLayoutBinding) : RecyclerView.ViewHolder(item.root)
 
     object DiffUtilCallBack : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {

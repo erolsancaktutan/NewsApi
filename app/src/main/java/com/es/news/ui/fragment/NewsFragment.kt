@@ -20,9 +20,7 @@ class NewsFragment : BaseFragment() {
     private val newsViewModel: ArticleViewModel by viewModels()
     private var sourceId: String? = null
     private val newsAdapter by lazy {
-        NewsAdapter(click = {position, isOnList->
-
-        })
+        NewsAdapter(articleDao)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +48,7 @@ class NewsFragment : BaseFragment() {
     private fun observeNewsList() {
         viewLifecycleOwner.lifecycleScope.launch {
             newsViewModel.getArticles(sourceId!!).observe(viewLifecycleOwner, {
-               newsAdapter.submitData(lifecycle, it)
+                newsAdapter.submitData(lifecycle, it)
             })
         }
     }
@@ -62,15 +60,5 @@ class NewsFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(sourceId: String) =
-            NewsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_SOURCE_ID, sourceId)
-                }
-            }
     }
 }

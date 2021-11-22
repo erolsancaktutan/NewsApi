@@ -15,4 +15,6 @@ interface ArticleDao {
 
     @Query("SELECT COUNT(id) FROM article_table WHERE url>:url")
     fun getCount(url:String): Int
+
+    fun isThereAnyArticle(url: String) = getCount(url)>0
 }
