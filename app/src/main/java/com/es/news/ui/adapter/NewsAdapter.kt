@@ -44,15 +44,13 @@ class NewsAdapter(private val articleDao: ArticleDao) : PagingDataAdapter<Articl
     }
 
     private fun addRemoveForReadList(position: Int){
-        getItem(position)?.let {
-            if (articleDao.isThereAnyArticle(it.url)) {
-                articleDao.deleteArticle(it.url)
-            } else {
-                articleDao.saveArticle(ArticleData(it.url))
-            }
-            it.isOnList =!it.isOnList
-            notifyItemChanged(position)
+        if (articleDao.isThereAnyArticle(getItem(position)!!.url)) {
+            articleDao.deleteArticle(getItem(position)!!.url)
+        } else {
+            articleDao.saveArticle(ArticleData(getItem(position)!!.url))
         }
+        getItem(position)!!.isOnList = !getItem(position)!!.isOnList
+        notifyItemChanged(position)
     }
 
     inner class NewsViewHolder(val item: NewsItemLayoutBinding) : RecyclerView.ViewHolder(item.root)
