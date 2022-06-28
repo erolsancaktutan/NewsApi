@@ -1,6 +1,5 @@
 package com.es.news.ui.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,53 +14,52 @@ import com.es.news.viewmodel.SourceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SourcesFragment : BaseFragment(){
-    private var binding: FragmentSourcesBinding? = null
+class SourcesFragment : BaseFragment() {
+    private lateinit var binding: FragmentSourcesBinding
     private val sourceViewModel: SourceViewModel by viewModels()
-    private val sourcesAdapter by lazy {
-        SourceAdapter(sourceViewModel.sourceList.value!!, click = {
-            val bundle = Bundle()
-            bundle.putString("sourceId", it)
-            Navigation.findNavController(binding!!.root)
-                .navigate(R.id.action_sourcesFragment_to_newsFragment,bundle)
-        })
-    }
-
-    private val categoryAdapter by lazy {
-        CategoryAdapter(sourceViewModel.categoryList.value!!, click = {isChecked, category ->
-
-        })
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSourcesBinding.inflate(inflater, container, false)
-        return binding!!.root
+        return binding.root
+    }
+
+    private fun initAdapters() {
+        with(binding) {
+            categoryRV.layoutManager = getHLayoutManager(requireContext())
+            categoryRV.adapter = CategoryAdapter(
+                sourceViewModel.categoryList.value!!,
+                click = { isChecked, category ->
+
+                })
+            sourcesRV.adapter = SourceAdapter(sourceViewModel.sourceList.value!!, click = {
+                val bundle = Bundle()
+                bundle.putString("sourceId", it)
+                Navigation.findNavController(binding.root)
+                    .navigate(R.id.action_sourcesFragment_to_newsFragment, bundle)
+            })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding!!.categoryRV.layoutManager = getHLayoutManager(requireContext())
-        binding!!.categoryRV.adapter = categoryAdapter
-        binding!!.sourcesRV.adapter = sourcesAdapter
+        initAdapters()
         observeCategoryList()
         observeSourceList()
         sourceViewModel.getSourceList("en")
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun observeCategoryList() {
-        sourceViewModel.categoryList.observe(this, {
-            categoryAdapter.notifyDataSetChanged()
-        })
+        sourceViewModel.categoryList.observe(viewLifecycleOwner) {
+            binding.categoryRV.adapter?.notifyDataSetChanged()
+        }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun observeSourceList() {
-        sourceViewModel.sourceList.observe(this, {
-            sourcesAdapter.notifyDataSetChanged()
-        })
+        sourceViewModel.sourceList.observe(viewLifecycleOwner) {
+            binding.sourcesRV.adapter?.notifyDataSetChanged()
+        }
     }
 }
